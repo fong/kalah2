@@ -11,11 +11,11 @@ package kalah;
  */
 public class Store extends SeedContainer {
     
-    public Store(int player){
-        this.player = player;
+    public Store(){
         this.numberOfSeeds = 0;
     }
     
+    @Override
     public void addNSeeds(int seeds){
         this.numberOfSeeds += seeds;
     }

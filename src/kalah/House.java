@@ -11,13 +11,14 @@ package kalah;
  */
 public class House extends SeedContainer {
     
-    public House(int player, int storeID){
-        this.player = player;
+    public House(int storeID){
         this.numberOfSeeds = 4;
     }
-    
-    public void removeAllSeeds(){
+
+    @Override
+    public int removeAllSeeds(){
+        int temp = numberOfSeeds;
         this.numberOfSeeds = 0;
-    }
-    
+        return temp;
+    }    
 }

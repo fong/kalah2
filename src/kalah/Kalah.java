@@ -21,8 +21,9 @@ public class Kalah {
 		io.println("Player 1's turn - Specify house number or 'q' to quit: ");
                 String input = io.readFromKeyboard("Input: ");
                 io.println(input);*/
-                GameControl game = new GameControl();
+                Game game = new Game();
                 game.running = true;
+                game.draw(io);
                         
                 while (game.running){
                     game.tick(io);
