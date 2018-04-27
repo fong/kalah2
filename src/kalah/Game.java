@@ -34,29 +34,38 @@ public class Game {
     
     public void tick(IO io){
         int command;
-        do {            
-            command = parseInput(io);
-            
-            if (command > 0){
-                nextTurn = move(command);
-                this.draw(io); 
-                
-                prompt = "Player P" + nextTurn + "'s turn - Specify house number or 'q' to quit: ";
-                currentTurn = nextTurn;
-            } else {
-                io.println("Game over");
-                this.draw(io);
-                nextTurn = 0;
-                running = false;
-            }
-            
+        do {
+            if (nextTurn > 0){
+                command = parseInput(io);
 
-        } while (!gameOver() && nextTurn != 0);
-                  
-        if (gameOver()){
+                if (command > 0){
+                    nextTurn = move(command);
+                    this.draw(io); 
+
+                    prompt = "Player P" + nextTurn + "'s turn - Specify house number or 'q' to quit: ";
+                    currentTurn = nextTurn;
+                } else {
+                    io.println("Game over");
+                    this.draw(io);
+                    nextTurn = 0;
+                    running = false;
+                    prompt = "";
+                }
+            }
+        } while (nextTurn != 0);
+        
+        if (nextTurn == 0 && gameOver() > 0){
             clearBoard();
             victory = true;
+            io.println("Game over");
             this.draw(io);
+            if (board[0].numberOfSeeds > board[7].numberOfSeeds){
+                io.println("Player 1 wins!");
+            } else if (board[0].numberOfSeeds < board[7].numberOfSeeds){
+                io.println("Player 2 wins!");
+            } else {
+                io.println("Tie!");
+            }
             running = false;
         }
     }
@@ -80,7 +89,7 @@ public class Game {
 
         io.println("+----+-------+-------+-------+-------+-------+-------+----+");
 
-        if (!running && victory){
+        if (victory){
             io.println("\tplayer 1:" + board[0].draw());
             io.println("\tplayer 2:" + board[7].draw());
         }
@@ -93,37 +102,39 @@ public class Game {
         
         while (!validInput) {
             
-            input = io.readFromKeyboard(prompt);
-            
-            try {
-                house = Integer.parseInt(input);
-                
-                if ((house < 0) || (house > 6)){
-                    validInput = false;
-                    prompt = "Bad input: ";
-                } else if (nextTurn == 2) {
-                    if (board[house + 7].numberOfSeeds == 0){
-                        io.println("House is empty. Move again.");
-                        this.draw(io);
+            if (prompt != ""){
+                input = io.readFromKeyboard(prompt);
+
+                try {
+                    house = Integer.parseInt(input);
+
+                    if ((house < 0) || (house > 6)){
+                        validInput = false;
+                        prompt = "Bad input: ";
+                    } else if (nextTurn == 2) {
+                        if (board[house + 7].numberOfSeeds == 0){
+                            io.println("House is empty. Move again.");
+                            this.draw(io);
+                            validInput = false;
+                        } else {
+                            return house;
+                        }
+                    } else if (nextTurn == 1) {
+                        if (board[house].numberOfSeeds == 0){
+                            io.println("House is empty. Move again.");
+                            this.draw(io);
+                            validInput = false;
+                        } else {
+                            return house;
+                        }
+                    } 
+                } catch (NumberFormatException e){
+                    if (!"q".equals(input)){
                         validInput = false;
                     } else {
-                        return house;
+                        validInput = true;
+                        return 0;
                     }
-                } else if (nextTurn == 1) {
-                    if (board[house].numberOfSeeds == 0){
-                        io.println("House is empty. Move again.");
-                        this.draw(io);
-                        validInput = false;
-                    } else {
-                        return house;
-                    }
-                } 
-            } catch (NumberFormatException e){
-                if (!"q".equals(input)){
-                    validInput = false;
-                } else {
-                    validInput = true;
-                    return 0;
                 }
             }
         }
@@ -144,13 +155,20 @@ public class Game {
         }
 
         plantSeeds(house);
-        return lastSeed(house);
+        int turn = lastSeed(house);
+        
+        if (turn == gameOver()){
+            return 0;
+        } else {
+            return turn;
+        }
     }
     
     private void plantSeeds(int house){
         housePosition = house;
+        int numberToPlant = board[house].numberOfSeeds;
         
-        while (board[house].numberOfSeeds > 1){
+        while (numberToPlant > 1){
             housePosition++;
             System.out.println("Plant House Position: " + housePosition);
             
@@ -158,15 +176,18 @@ public class Game {
                 case 14:
                     housePosition = 0;
                     if (currentTurn == 2){
+                        numberToPlant--;
                         board[house].removeSeed();
                         board[7].addSeed();
                     }   break;
                 case 7:
                     if (currentTurn == 1){
+                        numberToPlant--;
                         board[house].removeSeed();
                         board[0].addSeed();
                     }   break;
                 default:
+                    numberToPlant--;
                     board[house].removeSeed();
                     board[housePosition].addSeed();
                     break;
@@ -181,7 +202,7 @@ public class Game {
         if (currentTurn == 1){
             
             if (housePosition == 14){
-                housePosition = 0;
+                housePosition = 1;
             }
            
             if (housePosition == 7){
@@ -241,7 +262,7 @@ public class Game {
         return 0;
     }
     
-    private boolean gameOver(){
+    private int gameOver(){
         int player1Sum = 0, player2Sum = 0;
                 
         for (int i = 1; i < 7; i++){
@@ -249,7 +270,13 @@ public class Game {
             player1Sum += board[i+7].numberOfSeeds;
         }
         
-        return (player1Sum == 0 || player2Sum == 0);
+        if ((player1Sum == 0) && (nextTurn == 1)){
+            return 1;
+        } else if ((player2Sum == 0) && (nextTurn == 2)){
+            return 2;
+        } else {
+            return 0;
+        }
     }
     
     private void clearBoard(){
