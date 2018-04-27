@@ -166,7 +166,7 @@ public class Game {
     
     private void plantSeeds(int house){
         housePosition = house;
-        int numberToPlant = board[house].numberOfSeeds;
+        int numberToPlant = board[house].removeAllSeeds();
         
         while (numberToPlant > 1){
             housePosition++;
@@ -177,18 +177,15 @@ public class Game {
                     housePosition = 0;
                     if (currentTurn == 2){
                         numberToPlant--;
-                        board[house].removeSeed();
                         board[7].addSeed();
                     }   break;
                 case 7:
                     if (currentTurn == 1){
                         numberToPlant--;
-                        board[house].removeSeed();
                         board[0].addSeed();
                     }   break;
                 default:
                     numberToPlant--;
-                    board[house].removeSeed();
                     board[housePosition].addSeed();
                     break;
             }
@@ -206,7 +203,6 @@ public class Game {
             }
            
             if (housePosition == 7){
-                board[house].removeSeed();
                 board[0].addSeed();
                 return 1;
             }
@@ -214,17 +210,14 @@ public class Game {
             if ((housePosition < 7) && (board[housePosition].numberOfSeeds == 0)){
                 if (board[14-housePosition].numberOfSeeds > 0){
                     board[0].addNSeeds(board[14-housePosition].removeAllSeeds());
-                    board[house].removeSeed();
                     board[0].addSeed();
                 } else {
-                    board[house].removeSeed();
                     board[housePosition].addSeed();
                 }
                 return 2;
             }
             
             if ((housePosition > 7) || (board[housePosition].numberOfSeeds > 0)){
-                board[house].removeSeed();
                 board[housePosition].addSeed();
                 return 2;
             }
@@ -236,7 +229,6 @@ public class Game {
             }
             
             if (housePosition == 14){
-                board[house].removeSeed();
                 board[7].addSeed();
                 return 2;
             }
@@ -244,17 +236,14 @@ public class Game {
             if ((housePosition > 7) && (board[housePosition].numberOfSeeds == 0)){
                 if (board[14-housePosition].numberOfSeeds > 0){
                     board[7].addNSeeds(board[14-housePosition].removeAllSeeds());
-                    board[house].removeSeed();
                     board[7].addSeed();
                 } else {
-                    board[house].removeSeed();
                     board[housePosition].addSeed();
                 }
                 return 1;
             }
             
             if ((housePosition < 7) || (board[housePosition].numberOfSeeds > 0)){
-                board[house].removeSeed();
                 board[housePosition].addSeed();
                 return 1;
             }
