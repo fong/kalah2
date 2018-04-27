@@ -23,7 +23,6 @@ public class Kalah {
                 io.println(input);*/
                 Game game = new Game();
                 game.running = true;
-                game.draw(io);
                         
                 while (game.running){
                     game.tick(io);
