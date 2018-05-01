@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package kalah;
 
 import com.qualitascorpus.testsupport.IO;
@@ -7,12 +12,11 @@ import com.qualitascorpus.testsupport.IO;
  * @author Eugene Fong (efon103)
  */
 public class Game {
-    public boolean running;
-    
+    boolean lastTurn = false;
     int nextTurn = 2;
     int currentTurn = 1;
-    int houseSelected;
-    boolean lastTurn = false;
+    int housePosition;
+    public boolean running;
     boolean quit = false;
     boolean endGame = false;
     String prompt;
@@ -33,6 +37,7 @@ public class Game {
         boolean quit = false;
         while (!endGame || !quit) {
             this.draw(io); 
+
             prompt = "Player P" + currentTurn + "'s turn - Specify house number or 'q' to quit: ";
             command = parseInput(io);
 
@@ -61,6 +66,7 @@ public class Game {
             } else {
                 io.println("A tie!");
             }
+            running = false;
         }
     }
     
@@ -80,63 +86,85 @@ public class Game {
                     "] | 4[" + board[4].draw() +
                     "] | 5[" + board[5].draw() +
                     "] | 6[" + board[6].draw() + "] | P1 |");
+
         io.println("+----+-------+-------+-------+-------+-------+-------+----+");
     }
     
     private int parseInput(IO io){
         String input;
         int house;
+        boolean validInput = false;
         
-        while (!"".equals(prompt) && !endGame) {
-            input = io.readFromKeyboard(prompt);
+        while (!validInput) {
+            
+            if (!"".equals(prompt) && !endGame){
+                input = io.readFromKeyboard(prompt);
 
-            try {
-                house = Integer.parseInt(input);
+                try {
+                    house = Integer.parseInt(input);
 
-                if ((house < 0) || (house > 6)){
-                    prompt = "Input has to be between 1 and 6. Try again: ";
-                } else if (nextTurn == 2) {
-                    if (board[house + 7].numberOfSeeds == 0){
-                        io.println("House is empty. Move again.");
-                        this.draw(io);
+                    if ((house < 0) || (house > 6)){
+                        validInput = false;
+                        prompt = "Bad input: ";
+                    } else if (nextTurn == 2) {
+                        if (board[house + 7].numberOfSeeds == 0){
+                            io.println("House is empty. Move again.");
+                            this.draw(io);
+                            validInput = false;
+                        } else {
+                            return house;
+                        }
+                    } else if (nextTurn == 1) {
+                        if (board[house].numberOfSeeds == 0){
+                            io.println("House is empty. Move again.");
+                            this.draw(io);
+                            validInput = false;
+                        } else {
+                            return house;
+                        }
+                    } 
+                } catch (NumberFormatException e){
+                    if (!"q".equals(input)){
+                        validInput = false;
                     } else {
-                        return house;
+                        validInput = true;
+                        return 0;
                     }
-                } else if (nextTurn == 1) {
-                    if (board[house].numberOfSeeds == 0){
-                        io.println("House is empty. Move again.");
-                        this.draw(io);
-                    } else {
-                        return house;
-                    }
-                } 
-            } catch (NumberFormatException e){
-                if ("q".equals(input)){
-                    return 0;
                 }
+            } else {
+                return 0;
             }
         }
         return 0;
     }
         
     private int move(int command){
-        int house = (currentTurn == 2) ? command + 7 : command;
+        int house;
         
-        if (board[house].numberOfSeeds == 0) return 0;
+        if (currentTurn == 2){
+            house = command + 7;
+        } else {
+            house = command;
+        }
         
+        if (board[house].numberOfSeeds == 0){
+            return 0;
+        }
+
         plantSeeds(house);
-        return lastSeed();
+        return lastSeed(house);
     }
     
     private void plantSeeds(int house){
-        houseSelected = house;
+        housePosition = house;
         int numberToPlant = board[house].removeAllSeeds();
         
         while (numberToPlant > 1){
-            houseSelected++;
-            switch (houseSelected) {
+            housePosition++;
+            
+            switch (housePosition) {
                 case 14:
-                    houseSelected = 0;
+                    housePosition = 0;
                     if (currentTurn == 2){
                         numberToPlant--;
                         board[7].addSeed();
@@ -148,50 +176,59 @@ public class Game {
                     }   break;
                 default:
                     numberToPlant--;
-                    board[houseSelected].addSeed();
+                    board[housePosition].addSeed();
                     break;
             }
         }
     }
     
-    private int lastSeed(){
-        houseSelected++;
+    private int lastSeed(int house){
+        housePosition++;
 
-        if (currentTurn == 1){   
-            if (houseSelected == 14) houseSelected = 1;
+        if (currentTurn == 1){
             
-            if (houseSelected == 7){
+            if (housePosition == 14){
+                housePosition = 1;
+            }
+            if (housePosition == 7){
                 board[0].addSeed();
                 return 1;
-            } else if ((houseSelected < 7) && (board[houseSelected].numberOfSeeds == 0)){
-                if (board[14-houseSelected].numberOfSeeds > 0){
-                    board[0].addNSeeds(board[14-houseSelected].removeAllSeeds());
+            }
+            if ((housePosition < 7) && (board[housePosition].numberOfSeeds == 0)){
+                if (board[14-housePosition].numberOfSeeds > 0){
+                    board[0].addNSeeds(board[14-housePosition].removeAllSeeds());
                     board[0].addSeed();
                 } else {
-                    board[houseSelected].addSeed();
+                    board[housePosition].addSeed();
                 }
                 return 2;
-            } else if ((houseSelected > 7) || (board[houseSelected].numberOfSeeds > 0)){
-                board[houseSelected].addSeed();
+            }
+            if ((housePosition > 7) || (board[housePosition].numberOfSeeds > 0)){
+                board[housePosition].addSeed();
                 return 2;
             }
             
         } else if (currentTurn == 2){
-            if (houseSelected == 7) houseSelected++;
             
-            if (houseSelected == 14){
+            if (housePosition == 7){
+                housePosition++;
+            }
+            
+            if (housePosition == 14){
                 board[7].addSeed();
                 return 2;
-            }else if ((houseSelected > 7) && (board[houseSelected].numberOfSeeds == 0)){
-                if (board[14-houseSelected].numberOfSeeds > 0){
-                    board[7].addNSeeds(board[14-houseSelected].removeAllSeeds());
+            }
+            if ((housePosition > 7) && (board[housePosition].numberOfSeeds == 0)){
+                if (board[14-housePosition].numberOfSeeds > 0){
+                    board[7].addNSeeds(board[14-housePosition].removeAllSeeds());
                     board[7].addSeed();
                 } else {
-                    board[houseSelected].addSeed();
+                    board[housePosition].addSeed();
                 }
                 return 1;
-            }else if ((houseSelected < 7) || (board[houseSelected].numberOfSeeds > 0)){
-                board[houseSelected].addSeed();
+            }
+            if ((housePosition < 7) || (board[housePosition].numberOfSeeds > 0)){
+                board[housePosition].addSeed();
                 return 1;
             }
         } 
@@ -202,7 +239,7 @@ public class Game {
         if (nextTurn == checkEmpty()){
             this.endGame = true;
         } else if (nextTurn == 0) {
-            this.endGame = true;
+           this.endGame = true;
         } else {
             this.endGame = false;
         }   
@@ -210,7 +247,7 @@ public class Game {
     
     private int checkEmpty(){
         int player1Sum = 0, player2Sum = 0;
-        int isEmpty = 0;
+        int isEmpty;
                 
         for (int i = 1; i < 7; i++){
             player2Sum += board[i+7].numberOfSeeds;
@@ -221,7 +258,12 @@ public class Game {
             isEmpty = 2;
         } else if (player1Sum == 0){
             isEmpty = 1;
-        } 
+        } else if (player2Sum == 0 && player1Sum == 0){
+            isEmpty = 3;
+        } else {
+            isEmpty = 0;
+        }
+            
         return isEmpty;
     }
     
@@ -232,3 +274,4 @@ public class Game {
         }
     }
 }
+
