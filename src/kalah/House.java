@@ -1,7 +1,7 @@
 package kalah;
 
 /**
- *
+ * House.java is a child of SeedContainer which stores a player's public seed bank
  * @author Eugene Fong (efon103)
  */
 public class House extends SeedContainer {

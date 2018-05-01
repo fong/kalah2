@@ -3,7 +3,7 @@ package kalah;
 import com.qualitascorpus.testsupport.IO;
 
 /**
- *
+ * GameIO.java manages game tick and IO
  * @author Eugene Fong (efon103)
  */
 public class GameIO {
@@ -81,7 +81,7 @@ public class GameIO {
                 try {
                     house = Integer.parseInt(input);
 
-                    if ((house < 0) || (house > 6)){
+                    if ((house < 0) || (house > halfBoard-1)){
                         prompt = "Bad input: ";
                     } else if (game.nextTurn == 2) {
                         if (game.get(house+halfBoard) == 0){

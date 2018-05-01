@@ -1,9 +1,8 @@
 package kalah;
 
 /**
- *
+ * SeedContainer.java is the parent class for all containers that hold seeds
  * @author Eugene Fong (efon103)
- * 
  */
 public class SeedContainer {
     int numberOfSeeds;

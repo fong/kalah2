@@ -4,8 +4,8 @@ import static kalah.GameIO.boardSize;
 import static kalah.GameIO.halfBoard;
 
 /**
- *
- * @author tofutaco
+ * Game.java class controls game logic for Kalah
+ * @author Eugene Fong (efon103)
  */
 public class Game {
         SeedContainer[] board = new SeedContainer[boardSize];
@@ -13,7 +13,6 @@ public class Game {
         int nextTurn = 2;
         int currentTurn = 1;
         boolean endGame = false;
-        
         int houseIter;
         
         public Game(){
