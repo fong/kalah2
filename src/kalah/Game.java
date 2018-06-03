@@ -1,30 +1,33 @@
+
 package kalah;
 
 /**
  * Game.java class controls game logic for Kalah
  * @author Eugene Fong (efon103)
  */
-public class Game {
-        
-        GameBoard board;
-        public int nextTurn = 2;
-        public int currentTurn = 1;
-        public boolean endGame = false;
-        int size;
-        
-        int houseIter;
-        
-        public Game(int size){
-            board = new GameBoard(size);
-        }
+public class Game implements IGame{
+    GameBoard board;
 
+    int nextTurn = 2;
+    int currentTurn = 1;
+    boolean endGame = false;
+    int houseIter;
+    int size;
+
+    public Game(int gameSize){
+        size = gameSize;
+        board = new GameBoard(size);
+    }
+
+    @Override
     public void next(int command){
         nextTurn = move(command);
         gameOver();
         currentTurn = nextTurn; 
     }
-        
-    private int move(int command){
+    
+    @Override
+    public int move(int command){
         int house;
         
         if (currentTurn == 2){
@@ -33,12 +36,19 @@ public class Game {
             house = command;
         }
         
-        if (board.get(house) == 0){
+        if (board.numberOfSeeds(house) == 0){
             return 0;
         }
 
         plantSeeds(house);
         return lastSeed();
+    }
+    
+    @Override
+    public void gameOver(){
+        if (nextTurn == board.checkEmpty()){
+            endGame = true;
+        } else endGame = nextTurn == 0;   
     }
     
     private void plantSeeds(int house){
@@ -48,20 +58,22 @@ public class Game {
         while (numberToPlant > 1){
             houseIter++;
             
-            if (houseIter == size) {
-                houseIter = 0;
-                if (currentTurn == 2){
+            switch (houseIter) {
+                case 14:
+                    houseIter = 0;
+                    if (currentTurn == 2){
+                        numberToPlant--;
+                        board.addSeed(size/2);
+                    }   break;
+                case 7:
+                    if (currentTurn == 1){
+                        numberToPlant--;
+                        board.addSeed(0);
+                    }   break;
+                default:
                     numberToPlant--;
-                    board.addSeed(size/2);
-                }
-            }else if (houseIter == size/2){
-                if (currentTurn == 1){
-                    numberToPlant--;
-                    board.addSeed(0);
-                }
-            } else {
-                numberToPlant--;
-                board.addSeed(houseIter);
+                    board.addSeed(houseIter);
+                    break;
             }
         }
     }
@@ -112,9 +124,4 @@ public class Game {
         return 0;
     }
     
-    private void gameOver(){
-        if (nextTurn == board.checkEmpty()){
-            endGame = true;
-        } else endGame = nextTurn == 0;   
-    }
 }

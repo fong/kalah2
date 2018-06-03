@@ -12,7 +12,7 @@ public class Kalah {
             new Kalah().play(new MockIO());
 	}
 	public void play(IO io) {
-            GameIO g = new GameIO();
+            GameIO g = new GameIO(io);
             g.running = true;
 
             while (g.running){

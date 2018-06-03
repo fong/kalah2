@@ -12,8 +12,8 @@ package kalah;
 public class GameBoard {
     SeedContainer[] board;
     
-    int boardSize = 14;
-    int halfBoard = boardSize/2;
+    int boardSize;
+    int halfBoard;
     
     public GameBoard(int size){
         boardSize = size;

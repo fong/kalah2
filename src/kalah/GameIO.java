@@ -14,9 +14,11 @@ public class GameIO {
 
     String prompt;
     Game game;
+    Printer printer;
 
-    public GameIO(){
+    public GameIO(IO io){
         game = new Game(size);
+        printer = new Printer(io);
     }
     
     public void tick(IO io){
@@ -33,7 +35,6 @@ public class GameIO {
             } else {
                 io.println("Game over");
                 this.draw(io);
-                prompt = "";
                 running = false;
                 break;
             }
@@ -41,31 +42,13 @@ public class GameIO {
         
         if (game.endGame){
             game.board.clearBoard();
-            io.println("\tplayer 1:" + game.board.getPlayer(1));
-            io.println("\tplayer 2:" + game.board.getPlayer(2));
-            if (game.board.getPlayer(1) > game.board.getPlayer(2)){
-                io.println("Player 1 wins!");
-            } else if (game.board.getPlayer(1) < game.board.getPlayer(2)){
-                io.println("Player 2 wins!");
-            } else {
-                io.println("A tie!");
-            }
+            printer.printEndGame(game);
             running = false;
         }
     }
     
     public void draw(IO io){
-        io.println("+----+-------+-------+-------+-------+-------+-------+----+");
-        io.println("| P2 | 6[" + game.board.draw(13) + "] | 5[" + game.board.draw(12) +
-                    "] | 4[" + game.board.draw(11) + "] | 3[" + game.board.draw(10) +
-                    "] | 2[" + game.board.draw(9) + "] | 1[" + game.board.draw(8) +
-                    "] | " + game.board.draw(0) + " |");
-        io.println("|    |-------+-------+-------+-------+-------+-------|    |");
-        io.println("| " + game.board.draw(7) + " | 1[" + game.board.draw(1) +
-                    "] | 2[" + game.board.draw(2) +  "] | 3[" + game.board.draw(3) +
-                    "] | 4[" + game.board.draw(4) + "] | 5[" + game.board.draw(5) +
-                    "] | 6[" + game.board.draw(6) + "] | P1 |");
-        io.println("+----+-------+-------+-------+-------+-------+-------+----+");
+        printer.printGameBoard(game);
     }
     
     private int keyboardInput(IO io){
@@ -73,14 +56,14 @@ public class GameIO {
         int house;
         
         while (true) {
-            if (!"".equals(prompt) && !game.endGame){
+            if (!game.endGame){
                 input = io.readFromKeyboard(prompt);
 
                 try {
                     house = Integer.parseInt(input);
 
                     if ((house < 0) || (house > size/2-1)){
-                        prompt = "Bad input: ";
+                        prompt = "Invalid input: ";
                     } else if (game.nextTurn == 2) {
                         if (game.board.get(house+size/2) == 0){
                             io.println("House is empty. Move again.");
