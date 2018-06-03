@@ -15,4 +15,8 @@ public class Store extends SeedContainer {
         this.numberOfSeeds += seeds;
     }
     
+    @Override
+    public int removeAllSeeds(){
+        return 0;
+    }
 }

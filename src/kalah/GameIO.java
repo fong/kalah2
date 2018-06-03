@@ -8,9 +8,7 @@ import com.qualitascorpus.testsupport.IO;
  */
 public class GameIO {
     public boolean running;
-    
-    static int boardSize = 14;
-    static int halfBoard = boardSize/2;
+    public int size = 14;
                 
     boolean lastTurn = false;
 
@@ -18,7 +16,7 @@ public class GameIO {
     Game game;
 
     public GameIO(){
-        game = new Game();
+        game = new Game(size);
     }
     
     public void tick(IO io){
@@ -28,7 +26,7 @@ public class GameIO {
             this.draw(io); 
             prompt = "Player P" + game.currentTurn +
                      "'s turn - Specify house number or 'q' to quit: ";
-            command = parseInput(io);
+            command = keyboardInput(io);
 
             if (command > 0){
                 game.next(command);
@@ -42,12 +40,12 @@ public class GameIO {
         } 
         
         if (game.endGame){
-            game.clearBoard();
-            io.println("\tplayer 1:" + game.get(0));
-            io.println("\tplayer 2:" + game.get(halfBoard));
-            if (game.get(0) > game.get(halfBoard)){
+            game.board.clearBoard();
+            io.println("\tplayer 1:" + game.board.getPlayer(1));
+            io.println("\tplayer 2:" + game.board.getPlayer(2));
+            if (game.board.getPlayer(1) > game.board.getPlayer(2)){
                 io.println("Player 1 wins!");
-            } else if (game.get(0) < game.get(halfBoard)){
+            } else if (game.board.getPlayer(1) < game.board.getPlayer(2)){
                 io.println("Player 2 wins!");
             } else {
                 io.println("A tie!");
@@ -58,19 +56,19 @@ public class GameIO {
     
     public void draw(IO io){
         io.println("+----+-------+-------+-------+-------+-------+-------+----+");
-        io.println("| P2 | 6[" + game.draw(13) + "] | 5[" + game.draw(12) +
-                    "] | 4[" + game.draw(11) + "] | 3[" + game.draw(10) +
-                    "] | 2[" + game.draw(9) + "] | 1[" + game.draw(8) +
-                    "] | " + game.draw(0) + " |");
+        io.println("| P2 | 6[" + game.board.draw(13) + "] | 5[" + game.board.draw(12) +
+                    "] | 4[" + game.board.draw(11) + "] | 3[" + game.board.draw(10) +
+                    "] | 2[" + game.board.draw(9) + "] | 1[" + game.board.draw(8) +
+                    "] | " + game.board.draw(0) + " |");
         io.println("|    |-------+-------+-------+-------+-------+-------|    |");
-        io.println("| " + game.draw(7) + " | 1[" + game.draw(1) +
-                    "] | 2[" + game.draw(2) +  "] | 3[" + game.draw(3) +
-                    "] | 4[" + game.draw(4) + "] | 5[" + game.draw(5) +
-                    "] | 6[" + game.draw(6) + "] | P1 |");
+        io.println("| " + game.board.draw(7) + " | 1[" + game.board.draw(1) +
+                    "] | 2[" + game.board.draw(2) +  "] | 3[" + game.board.draw(3) +
+                    "] | 4[" + game.board.draw(4) + "] | 5[" + game.board.draw(5) +
+                    "] | 6[" + game.board.draw(6) + "] | P1 |");
         io.println("+----+-------+-------+-------+-------+-------+-------+----+");
     }
     
-    private int parseInput(IO io){
+    private int keyboardInput(IO io){
         String input;
         int house;
         
@@ -81,17 +79,17 @@ public class GameIO {
                 try {
                     house = Integer.parseInt(input);
 
-                    if ((house < 0) || (house > halfBoard-1)){
+                    if ((house < 0) || (house > size/2-1)){
                         prompt = "Bad input: ";
                     } else if (game.nextTurn == 2) {
-                        if (game.get(house+halfBoard) == 0){
+                        if (game.board.get(house+size/2) == 0){
                             io.println("House is empty. Move again.");
                             this.draw(io);
                         } else {
                             return house;
                         }
                     } else if (game.nextTurn == 1) {
-                        if (game.get(house) == 0){
+                        if (game.board.get(house) == 0){
                             io.println("House is empty. Move again.");
                             this.draw(io);
                         } else {

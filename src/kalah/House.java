@@ -11,6 +11,9 @@ public class House extends SeedContainer {
     }
 
     @Override
+    public void addNSeeds(int seeds){}
+    
+    @Override
     public int removeAllSeeds(){
         int temp = numberOfSeeds;
         this.numberOfSeeds = 0;
