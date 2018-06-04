@@ -6,35 +6,38 @@ import com.qualitascorpus.testsupport.IO;
  * GameIO.java manages game tick and IO
  * @author Eugene Fong (efon103)
  */
-public class GameIO {
+public class GameIO implements IGameIO {
     public boolean running;
     public int size = 14;
                 
     boolean lastTurn = false;
-
+    IO io;
+    
     String prompt;
     Game game;
     Printer printer;
 
-    public GameIO(IO io){
+    public GameIO(IO ioParam){
+        io = ioParam;
         game = new Game(size);
         printer = new Printer(io);
     }
     
-    public void tick(IO io){
+    @Override
+    public void tick(){
         int command;
         
         while(true) {
-            this.draw(io); 
+            draw(); 
             prompt = "Player P" + game.currentTurn +
                      "'s turn - Specify house number or 'q' to quit: ";
-            command = keyboardInput(io);
+            command = keyboardInput();
 
             if (command > 0){
                 game.next(command);
             } else {
                 io.println("Game over");
-                this.draw(io);
+                draw();
                 running = false;
                 break;
             }
@@ -47,11 +50,12 @@ public class GameIO {
         }
     }
     
-    public void draw(IO io){
+    @Override
+    public void draw(){
         printer.printGameBoard(game);
     }
     
-    private int keyboardInput(IO io){
+    private int keyboardInput(){
         String input;
         int house;
         
@@ -67,14 +71,14 @@ public class GameIO {
                     } else if (game.nextTurn == 2) {
                         if (game.board.get(house+size/2) == 0){
                             io.println("House is empty. Move again.");
-                            this.draw(io);
+                            draw();
                         } else {
                             return house;
                         }
                     } else if (game.nextTurn == 1) {
                         if (game.board.get(house) == 0){
                             io.println("House is empty. Move again.");
-                            this.draw(io);
+                            draw();
                         } else {
                             return house;
                         }

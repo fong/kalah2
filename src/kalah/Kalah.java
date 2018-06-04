@@ -8,16 +8,15 @@ import com.qualitascorpus.testsupport.MockIO;
  * the test infrastructure.
  */
 public class Kalah {
-	public static void main(String[] args) {
-            new Kalah().play(new MockIO());
-	}
-	public void play(IO io) {
-            GameIO g = new GameIO(io);
-            g.running = true;
+    public static void main(String[] args) {
+        new Kalah().play(new MockIO());
+    }
+    public void play(IO io) {
+        GameIO g = new GameIO(io);
+        g.running = true;
 
-            while (g.running){
-                g.tick(io);
-            }
-	}
-        
+        while (g.running){
+            g.tick();
+        }
+    }
 }
