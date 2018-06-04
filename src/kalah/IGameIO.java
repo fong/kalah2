@@ -8,4 +8,5 @@ public interface IGameIO {
     public void tick();
     public void draw();
     public boolean running();
+    public int input();
 }

@@ -31,7 +31,7 @@ public class GameIO implements IGameIO {
             draw(); 
             prompt = "Player P" + game.currentTurn() +
                      "'s turn - Specify house number or 'q' to quit: ";
-            command = keyboardInput();
+            command = input();
 
             if (command > 0){
                 game.next(command);
@@ -60,7 +60,8 @@ public class GameIO implements IGameIO {
         return running;
     }
     
-    private int keyboardInput(){
+    @Override
+    public int input(){
         String input;
         int house;
         
