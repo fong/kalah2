@@ -8,19 +8,19 @@ import com.qualitascorpus.testsupport.IO;
  */
 public class GameIO implements IGameIO {
     public boolean running;
-    public int size = 14;
-                
+    public int size = 14; 
     boolean lastTurn = false;
-    IO io;
     
+    IO io;
     String prompt;
-    Game game;
-    Printer printer;
+    IGame game;
+    IPrinter printer;
 
     public GameIO(IO ioParam){
         io = ioParam;
         game = new Game(size);
         printer = new Printer(io);
+        running = true;
     }
     
     @Override
@@ -29,7 +29,7 @@ public class GameIO implements IGameIO {
         
         while(true) {
             draw(); 
-            prompt = "Player P" + game.currentTurn +
+            prompt = "Player P" + game.currentTurn() +
                      "'s turn - Specify house number or 'q' to quit: ";
             command = keyboardInput();
 
@@ -43,8 +43,8 @@ public class GameIO implements IGameIO {
             }
         } 
         
-        if (game.endGame){
-            game.board.clearBoard();
+        if (game.endGame()){
+            game.board().clearBoard();
             printer.printEndGame(game);
             running = false;
         }
@@ -55,12 +55,17 @@ public class GameIO implements IGameIO {
         printer.printGameBoard(game);
     }
     
+    @Override
+    public boolean running(){
+        return running;
+    }
+    
     private int keyboardInput(){
         String input;
         int house;
         
         while (true) {
-            if (!game.endGame){
+            if (!game.endGame()){
                 input = io.readFromKeyboard(prompt);
 
                 try {
@@ -68,15 +73,15 @@ public class GameIO implements IGameIO {
 
                     if ((house < 0) || (house > size/2-1)){
                         prompt = "Invalid input: ";
-                    } else if (game.nextTurn == 2) {
-                        if (game.board.get(house+size/2) == 0){
+                    } else if (game.nextTurn() == 2) {
+                        if (game.board().get(house+size/2) == 0){
                             io.println("House is empty. Move again.");
                             draw();
                         } else {
                             return house;
                         }
-                    } else if (game.nextTurn == 1) {
-                        if (game.board.get(house) == 0){
+                    } else if (game.nextTurn() == 1) {
+                        if (game.board().get(house) == 0){
                             io.println("House is empty. Move again.");
                             draw();
                         } else {

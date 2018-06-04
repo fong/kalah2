@@ -51,6 +51,26 @@ public class Game implements IGame{
         } else endGame = nextTurn == 0;   
     }
     
+    @Override
+    public int currentTurn(){
+        return currentTurn;
+    }
+    
+    @Override
+    public int nextTurn(){
+        return nextTurn;
+    }
+    
+    @Override
+    public boolean endGame(){
+        return endGame;
+    }
+    
+    @Override
+    public GameBoard board(){
+        return board;
+    }
+    
     private void plantSeeds(int house){
         houseIter = house;
         int numberToPlant = board.removeAllSeeds(house);

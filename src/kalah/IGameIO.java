@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kalah;
 
 /**
  *
- * @author tofutaco
+ * @author Eugene Fong (efon103)
  */
 public interface IGameIO {
     public void tick();
     public void draw();
+    public boolean running();
 }

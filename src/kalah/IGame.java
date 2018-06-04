@@ -1,19 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kalah;
 
 /**
  *
- * @author tofutaco
+ * @author Eugene Fong (efon103)
  */
 public interface IGame {
 
     public void next(int command);
-        
     public int move(int command);
-    
+    public int nextTurn();
+    public int currentTurn();
+    public boolean endGame();
+    public GameBoard board();
     public void gameOver();
 }

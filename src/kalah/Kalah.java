@@ -12,10 +12,9 @@ public class Kalah {
         new Kalah().play(new MockIO());
     }
     public void play(IO io) {
-        GameIO g = new GameIO(io);
-        g.running = true;
+        IGameIO g = new GameIO(io);
 
-        while (g.running){
+        while (g.running()){
             g.tick();
         }
     }
